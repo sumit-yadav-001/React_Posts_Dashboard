@@ -1,5 +1,3 @@
-
-
 🚀 React Posts Dashboard
 
 A modern and responsive Posts Dashboard built using React.js.
