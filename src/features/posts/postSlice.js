@@ -1,48 +1,37 @@
-import {createSlice, createAsyncThunk, current} from "@reduxjs/toolkit";
-import {fetchPostsAPI} from "../../services/postService";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { getPostsAPI } from "../../services/postService";
 
 export const fetchPosts = createAsyncThunk(
-    "posts/fetchPosts",
-    async () => {
-      const data = await fetchPostsAPI();
-      return data;
-    }
+  "posts/fetchPosts",
+  async () => await getPostsAPI()
 );
 
 const postSlice = createSlice({
-    name:"posts",
-    initialState:{
-        allposts:[],
-        visiblePosts:[],
-        currentPage:1,
-        postsPerPage:10,
-        loading:true,
+  name: "posts",
+  initialState: {
+    allPosts: [],
+    deletedIds: [],
+    currentPage: 1,
+    loading: true,
+  },
+  reducers: {
+    removePost: (state, action) => {
+      state.deletedIds.push(action.payload);
     },
-    reducers:{
-      removePosts:(state,action)=>{
-        state.allposts = state.allposts.filter(post=>post.id !== action.payload);
-      },
-
-      setPage:(state,action)=>{
-        state.currentPage = action.payload;
-      },
-
-      updateVisiblePosts:(state)=>{
-        const start = (state.currentPage - 1)* state.postsPerPage;
-
-        const end = start + state.postsPerPage;
-        state.visiblePosts = state.allposts.slice(start,end);
-      }
+    setPage: (state, action) => {
+      state.currentPage = action.payload;
     },
+    stopLoading: (state) => {
+      state.loading = false;
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(fetchPosts.fulfilled, (state, action) => {
+      state.allPosts = action.payload;
+    });
+  },
+});
 
-    extraReducers:builder=>{
-      builder.addCase(fetchPosts.fulfilled,(state,action) =>{
-        state.allposts = action.payload;
-        state.loading = false;
-  });
-    }
-  });
-
-export const {removePosts,setPage,updateVisiblePosts} = postSlice.actions;
-
+export const { removePost, setPage, stopLoading } =
+  postSlice.actions;
 export default postSlice.reducer;

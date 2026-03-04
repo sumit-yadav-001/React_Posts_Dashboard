@@ -1,38 +1,62 @@
-import {useSelector,useDispatch} from "react-redux";
-import {setPage} from "../features/posts/postSlice";
-import totalPages from "../features/posts/postSelectors";
+import { useDispatch, useSelector } from "react-redux";
+import { setPage } from "../features/posts/postSlice";
+import { selectFilteredPosts } from "../features/posts/postSelectors";
 
 const Pagination = () => {
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
+  const posts = useSelector(selectFilteredPosts);
+  const currentPage = useSelector(
+    (state) => state.posts.currentPage
+  );
 
-    const {allPosts,currentPage,postsPerPage} = useSelector(state=>state.posts); 
+  const totalPages = Math.ceil(posts.length / 6);
+  const visiblePages = 4;
 
-    return (
-        <div className="flex justify-center mt-5 gap-2">
+  const start =
+    Math.floor((currentPage - 1) / visiblePages) *
+      visiblePages +
+    1;
 
+  const end = Math.min(start + visiblePages - 1, totalPages);
+
+  const pages = [];
+  for (let i = start; i <= end; i++) pages.push(i);
+
+  return (
+    <div className="flex justify-center items-center mt-16 gap-3">
+
+      <button
+        disabled={currentPage === 1}
+        onClick={() => dispatch(setPage(currentPage - 1))}
+        className="w-10 h-10 rounded-lg border hover:bg-black hover:text-white transition"
+      >
+        ‹
+      </button>
+
+      {pages.map((page) => (
         <button
-            onClick={()=>dispatch(setPage(Math.max(currentPage-1,1)))}
-            className="px-3 py-1 bg-gray-300">
-            Prev
+          key={page}
+          onClick={() => dispatch(setPage(page))}
+          className={`w-10 h-10 rounded-lg ${
+            currentPage === page
+              ? "bg-black text-white shadow-lg"
+              : "border hover:bg-gray-100"
+          }`}
+        >
+          {page}
         </button>
+      ))}
 
-        {[...Array(totalPages)].map((_,i) => (
-            <button
-            key={i}
-            onClick={()=>dispatch(setPage(i+1))}
-            className={`px-3 py-1 ${i+1 === currentPage ? 'bg-blue-500 text-white' : 'bg-gray-300'}`}>
-            {i+1}
-            </button>
-        ))}
-
+      {end < totalPages && (
         <button
-            onClick={()=>dispatch(setPage(Math.min(currentPage+1,totalPages)))}
-            className="px-3 py-1 bg-gray-300">
-            Next
+          onClick={() => dispatch(setPage(end + 1))}
+          className="w-10 h-10 rounded-lg border hover:bg-black hover:text-white transition"
+        >
+          ›
         </button>
-
-        </div>
-    );
+      )}
+    </div>
+  );
 };
 
 export default Pagination;

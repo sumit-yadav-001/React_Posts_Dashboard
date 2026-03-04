@@ -1,37 +1,52 @@
-import React from 'react'
-import {useDispatch, useSelector} from "react-redux";
-import { useEffect } from 'react';
-import { fetchPosts,updateVisiblePosts } from '../features/posts/postSlice';
-import PostCard from '../components/PostCard';
-import Pagination from '../components/Pagination';
-import Loader from '../components/Loader';
-
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchPosts,
+  stopLoading,
+} from "../features/posts/postSlice";
+import CardList from "../components/CardList";
+import Pagination from "../components/Pagination";
+import Loader from "../components/Loader";
 
 const Home = () => {
-    const dispatch = useDispatch();
-    const {visiblePosts,loading,currentPage} = useSelector(state=>state.posts); 
+  const dispatch = useDispatch();
+  const { loading } = useSelector((state) => state.posts);
 
-    useEffect(()=>{
-      setTimeout(()=>{
-        dispatch(fetchPosts());
-        },5000);
-        },[]);
+  useEffect(() => {
+    dispatch(fetchPosts());
 
-    useEffect(()=>{
-      dispatch(updateVisiblePosts());
-    },[currentPage]);
+    const timer = setTimeout(() => {
+      dispatch(stopLoading());
+    }, 5000);
 
-    if(loading) return <Loader/>;
+    return () => clearTimeout(timer);
+  }, [dispatch]);
+
+  if (loading)
+    return (
+      <div className="min-h-screen bg-gray-50 p-12">
+        <Loader />
+      </div>
+    );
+
   return (
-    <div className='p-6 max-w-6xl mx-auto'>
-  <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-    {visiblePosts.map(post=>(
-      <PostCard key={post.id} post={post}/>
-    ))}
-  </div>
-  <Pagination/>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-6 py-12">
+
+        <div className="mb-14 text-center">
+          <h1 className="text-4xl font-bold text-gray-900">
+            Posts Dashboard
+          </h1>
+          <p className="text-gray-500 mt-3">
+            Browse and manage posts easily
+          </p>
+        </div>
+
+        <CardList />
+        <Pagination />
+      </div>
     </div>
-  )
-}
+  );
+};
 
 export default Home;

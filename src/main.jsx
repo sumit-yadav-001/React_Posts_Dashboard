@@ -1,14 +1,14 @@
-import React from 'react'
-import ReactDom from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
-import { store } from './app/store.js'
-import {Provider} from "react-redux";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import { Provider } from "react-redux";
+import { store } from "./app/store";
+import { Toaster } from "react-hot-toast";
+import "./index.css";
 
-ReactDom.createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
-   <App />
+    <App />
+    <Toaster position="top-right" />
   </Provider>
- 
-
-)
+);
