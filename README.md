@@ -3,7 +3,7 @@
 A modern and responsive Posts Dashboard built using React.js.
 This application fetches posts from an API and displays them with efficient client-side pagination and a clean, modular component structure.
 
-🔗 Live Demo --
+🔗 Live Demo -
 
 👉 https://reactproject-pagination.netlify.app/
 
